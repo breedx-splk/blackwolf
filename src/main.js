@@ -25,6 +25,9 @@ const appDynamicsMark = `
   </div>
 `;
 
+const dualSignalDocsUrl =
+  'https://help.splunk.com/en/appdynamics-on-premises/virtual-appliance-self-hosted/25.7.0/splunk-appdynamics-for-opentelemetry/instrument-applications-with-splunk-appdynamics-for-opentelemetry/enable-opentelemetry-in-the-java-agent/enable-dual-signal-mode';
+
 function shell(content, step = '') {
   return `
     <main class="app-shell">
@@ -160,16 +163,110 @@ function showOpenTelemetryPath() {
 function showAgentPath() {
   app.innerHTML = shell(
     `
-      <section class="question-card ready-card" aria-labelledby="agent-path-title" tabindex="-1">
-        <span class="eyebrow">Agent detected</span>
-        <h1 id="agent-path-title">AppDynamics is in the picture.</h1>
+      <section class="question-card dual-signal-card" aria-labelledby="dual-signal-title" tabindex="-1">
+        <span class="eyebrow">A safer transition</span>
+        <h1 id="dual-signal-title">Have you enabled dual-signal mode?</h1>
         <p>
-          Next, we’ll identify the agent instrumenting your application so Blackwolf
-          can tailor the migration path to your setup.
+          It’s optional, but running AppDynamics and OpenTelemetry together gives you
+          time to validate telemetry and rebuild dashboards, alerts, and workflows
+          before you cut over.
+        </p>
+      </section>
+      <div class="actions decision-actions" aria-label="Choose your dual-signal path">
+        <button class="primary-button decision-button" id="dual-enabled-button" type="button">
+          <span>Yes</span>
+          <small>It’s already enabled</small>
+        </button>
+        <button class="primary-button decision-button" id="dual-guide-button" type="button">
+          <span>Not yet</span>
+          <small>Guide me through it</small>
+        </button>
+        <button class="primary-button decision-button" id="dual-skip-button" type="button">
+          <span>Skip</span>
+          <small>I’ll migrate directly</small>
+        </button>
+      </div>
+      <button class="text-button" id="back-button" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+        Back to current setup
+      </button>
+    `,
+    '<div class="step-label" aria-label="Current step">Transition strategy <span>02</span></div>',
+  );
+
+  document.querySelector('#back-button').addEventListener('click', showAgentQuestion);
+  document
+    .querySelector('#dual-enabled-button')
+    .addEventListener('click', () => showNextMigrationStep('dual'));
+  document.querySelector('#dual-guide-button').addEventListener('click', showDualSignalGuide);
+  document
+    .querySelector('#dual-skip-button')
+    .addEventListener('click', () => showNextMigrationStep('direct'));
+  focusCard();
+}
+
+function showDualSignalGuide() {
+  app.innerHTML = shell(
+    `
+      <section class="question-card ready-card" aria-labelledby="dual-guide-title" tabindex="-1">
+        <span class="eyebrow">Optional setup</span>
+        <h1 id="dual-guide-title">Run both signals while you prepare.</h1>
+        <p>
+          Follow Splunk’s
+          <a href="${dualSignalDocsUrl}" target="_blank" rel="noopener noreferrer">dual-signal mode guide</a>
+          to emit AppDynamics and OpenTelemetry data side by side. When it’s ready,
+          return here and continue.
         </p>
         <div class="callout">
           <span aria-hidden="true">i</span>
-          <p>The agent-identification question will be added next.</p>
+          <p>Dual-signal mode is helpful during a transition, but it isn’t required.</p>
+        </div>
+      </section>
+      <div class="actions actions-split outcome-actions">
+        <button class="secondary-button" id="back-button" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+          Back
+        </button>
+        <button class="primary-button" id="dual-ready-button" type="button">
+          It’s enabled
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+        </button>
+      </div>
+      <button class="text-button" id="continue-direct-button" type="button">
+        Continue without dual-signal mode
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+      </button>
+    `,
+    '<div class="step-label" aria-label="Current step">Dual-signal setup <span>02</span></div>',
+  );
+
+  document.querySelector('#back-button').addEventListener('click', showAgentPath);
+  document
+    .querySelector('#dual-ready-button')
+    .addEventListener('click', () => showNextMigrationStep('dual'));
+  document
+    .querySelector('#continue-direct-button')
+    .addEventListener('click', () => showNextMigrationStep('direct'));
+  focusCard();
+}
+
+function showNextMigrationStep(strategy) {
+  const isDualSignal = strategy === 'dual';
+  const eyebrow = isDualSignal ? 'Dual-signal mode active' : 'Direct migration selected';
+  const title = isDualSignal ? 'Side-by-side telemetry is ready.' : 'Straight to the migration.';
+  const description = isDualSignal
+    ? 'You can keep both data streams running while you validate the OpenTelemetry experience.'
+    : 'We’ll continue without a dual-signal transition and focus on the direct migration path.';
+
+  app.innerHTML = shell(
+    `
+      <section class="question-card ready-card" aria-labelledby="next-step-title" tabindex="-1">
+        <span class="eyebrow">${eyebrow}</span>
+        <h1 id="next-step-title">${title}</h1>
+        <p>${description}</p>
+        <div class="callout">
+          <span aria-hidden="true">i</span>
+          <p>The next migration question will be added in the next iteration.</p>
         </div>
       </section>
       <div class="actions actions-split">
@@ -180,10 +277,10 @@ function showAgentPath() {
         <button class="primary-button" type="button" disabled>Adventure onward</button>
       </div>
     `,
-    '<div class="step-label" aria-label="Current step">Identify your agent <span>02</span></div>',
+    '<div class="step-label" aria-label="Current step">Migration details <span>03</span></div>',
   );
 
-  document.querySelector('#back-button').addEventListener('click', showAgentQuestion);
+  document.querySelector('#back-button').addEventListener('click', showAgentPath);
   focusCard();
 }
 

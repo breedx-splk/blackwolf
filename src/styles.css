@@ -328,6 +328,29 @@ h1 em {
   font-size: 1rem;
 }
 
+.decision-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.decision-button {
+  min-width: 0;
+  min-height: 5rem;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-inline: 0.7rem;
+}
+
+.decision-button small {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  opacity: 0.78;
+  text-transform: none;
+}
+
 .primary-button,
 .secondary-button {
   display: inline-flex;
@@ -463,6 +486,11 @@ h1 em {
 
 .ready-card h1 {
   max-width: none;
+}
+
+.dual-signal-card h1 {
+  max-width: 17ch;
+  font-size: clamp(2rem, 5.3vw, 3.25rem);
 }
 
 .success-mark {
@@ -622,6 +650,21 @@ footer {
   .answer-button {
     min-width: 0;
     flex: 1;
+  }
+
+  .decision-actions {
+    gap: 0.55rem;
+  }
+
+  .decision-button {
+    min-height: 4.6rem;
+    padding-inline: 0.25rem;
+    font-size: 0.72rem;
+  }
+
+  .decision-button small {
+    font-size: 0.62rem;
+    line-height: 1.15;
   }
 
   .outcome-actions {
