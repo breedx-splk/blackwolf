@@ -28,6 +28,27 @@ const appDynamicsMark = `
 const dualSignalDocsUrl =
   'https://help.splunk.com/en/appdynamics-on-premises/virtual-appliance-self-hosted/25.7.0/splunk-appdynamics-for-opentelemetry/instrument-applications-with-splunk-appdynamics-for-opentelemetry/enable-opentelemetry-in-the-java-agent/enable-dual-signal-mode';
 
+const wizardState = {
+  dualSignalStrategy: null,
+  applicationName: '',
+  tierName: '',
+  accountName: '',
+};
+
+function escapeHtml(value) {
+  return String(value).replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+      })[character],
+  );
+}
+
 function shell(content, step = '') {
   return `
     <main class="app-shell">
@@ -251,36 +272,141 @@ function showDualSignalGuide() {
 }
 
 function showNextMigrationStep(strategy) {
-  const isDualSignal = strategy === 'dual';
-  const eyebrow = isDualSignal ? 'Dual-signal mode active' : 'Direct migration selected';
-  const title = isDualSignal ? 'Side-by-side telemetry is ready.' : 'Straight to the migration.';
-  const description = isDualSignal
-    ? 'You can keep both data streams running while you validate the OpenTelemetry experience.'
-    : 'We’ll continue without a dual-signal transition and focus on the direct migration path.';
+  wizardState.dualSignalStrategy = strategy;
+  showApplicationDetails();
+}
 
+function showApplicationDetails() {
   app.innerHTML = shell(
     `
-      <section class="question-card ready-card" aria-labelledby="next-step-title" tabindex="-1">
-        <span class="eyebrow">${eyebrow}</span>
-        <h1 id="next-step-title">${title}</h1>
-        <p>${description}</p>
-        <div class="callout">
-          <span aria-hidden="true">i</span>
-          <p>The next migration question will be added in the next iteration.</p>
-        </div>
+      <section class="question-card application-details-card" aria-labelledby="application-details-title" tabindex="-1">
+        <span class="eyebrow">Application identity</span>
+        <h1 id="application-details-title">How does AppDynamics identify this application?</h1>
+        <p>
+          We’ll use these values to prepare the resource information for your
+          OpenTelemetry agent.
+        </p>
+        <form class="details-form" id="application-details-form">
+          <label class="field-group">
+            <span>Application name</span>
+            <input
+              name="applicationName"
+              type="text"
+              value="${escapeHtml(wizardState.applicationName)}"
+              placeholder="Example: checkout-platform"
+              autocomplete="off"
+              spellcheck="false"
+              required
+            />
+            <small>The application name shown in AppDynamics.</small>
+          </label>
+          <label class="field-group">
+            <span>Tier name</span>
+            <input
+              name="tierName"
+              type="text"
+              value="${escapeHtml(wizardState.tierName)}"
+              placeholder="Example: checkout-api"
+              autocomplete="off"
+              spellcheck="false"
+              required
+            />
+            <small>The tier containing this instrumented service.</small>
+          </label>
+          <label class="field-group">
+            <span>Account name</span>
+            <input
+              name="accountName"
+              type="text"
+              value="${escapeHtml(wizardState.accountName)}"
+              placeholder="Example: customer1"
+              autocomplete="off"
+              spellcheck="false"
+              required
+            />
+            <small>The account associated with your controller.</small>
+          </label>
+        </form>
       </section>
       <div class="actions actions-split">
         <button class="secondary-button" id="back-button" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
           Back
         </button>
-        <button class="primary-button" type="button" disabled>Adventure onward</button>
+        <button class="primary-button" type="submit" form="application-details-form">
+          Continue
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+        </button>
       </div>
     `,
-    '<div class="step-label" aria-label="Current step">Migration details <span>03</span></div>',
+    '<div class="step-label" aria-label="Current step">Application details <span>03</span></div>',
   );
 
   document.querySelector('#back-button').addEventListener('click', showAgentPath);
+  document.querySelector('#application-details-form').addEventListener('input', (event) => {
+    if (event.target.name in wizardState) {
+      wizardState[event.target.name] = event.target.value;
+    }
+  });
+  document.querySelector('#application-details-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const fields = ['applicationName', 'tierName', 'accountName'];
+
+    fields.forEach((fieldName) => {
+      const input = event.currentTarget.elements.namedItem(fieldName);
+      input.setCustomValidity(input.value.trim() ? '' : 'Enter a value before continuing.');
+    });
+
+    if (!event.currentTarget.checkValidity()) {
+      event.currentTarget.reportValidity();
+      return;
+    }
+
+    wizardState.applicationName = formData.get('applicationName').trim();
+    wizardState.tierName = formData.get('tierName').trim();
+    wizardState.accountName = formData.get('accountName').trim();
+    showResourcePreparation();
+  });
+  focusCard();
+}
+
+function showResourcePreparation() {
+  app.innerHTML = shell(
+    `
+      <section class="question-card ready-card" aria-labelledby="resource-title" tabindex="-1">
+        <span class="eyebrow">Application details captured</span>
+        <h1 id="resource-title">Ready to build the resource identity.</h1>
+        <p>
+          Blackwolf has the AppDynamics identifiers needed for the next configuration step.
+        </p>
+        <dl class="details-review">
+          <div>
+            <dt>Application</dt>
+            <dd>${escapeHtml(wizardState.applicationName)}</dd>
+          </div>
+          <div>
+            <dt>Tier</dt>
+            <dd>${escapeHtml(wizardState.tierName)}</dd>
+          </div>
+          <div>
+            <dt>Account</dt>
+            <dd>${escapeHtml(wizardState.accountName)}</dd>
+          </div>
+        </dl>
+      </section>
+      <div class="actions actions-split">
+        <button class="secondary-button" id="back-button" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+          Edit details
+        </button>
+        <button class="primary-button" type="button" disabled>Adventure onward</button>
+      </div>
+    `,
+    '<div class="step-label" aria-label="Current step">Resource preparation <span>04</span></div>',
+  );
+
+  document.querySelector('#back-button').addEventListener('click', showApplicationDetails);
   focusCard();
 }
 

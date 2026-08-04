@@ -493,6 +493,94 @@ h1 em {
   font-size: clamp(2rem, 5.3vw, 3.25rem);
 }
 
+.application-details-card h1 {
+  max-width: 18ch;
+  font-size: clamp(1.9rem, 4.8vw, 3rem);
+}
+
+.details-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.field-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.field-group > span {
+  color: #293b62;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.field-group input {
+  width: 100%;
+  border: 1px solid #bdc5d5;
+  border-radius: 0.65rem;
+  outline: none;
+  padding: 0.8rem 0.75rem;
+  color: #172445;
+  background: #fff;
+  font: inherit;
+  font-size: 0.88rem;
+  box-shadow: inset 0 1px 2px rgb(32 47 80 / 7%);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.field-group input::placeholder {
+  color: #929bad;
+}
+
+.field-group input:focus {
+  border-color: #5878c3;
+  box-shadow: 0 0 0 3px rgb(88 120 195 / 16%);
+}
+
+.field-group small {
+  color: #778196;
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.details-review {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.75rem 0 0;
+}
+
+.details-review div {
+  min-width: 0;
+  border: 1px solid #d4d9e3;
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  background: #f4f6fa;
+}
+
+.details-review dt {
+  color: #778196;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.details-review dd {
+  overflow-wrap: anywhere;
+  margin: 0.35rem 0 0;
+  color: #26385e;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
 .success-mark {
   display: grid;
   width: 4.25rem;
@@ -665,6 +753,29 @@ footer {
   .decision-button small {
     font-size: 0.62rem;
     line-height: 1.15;
+  }
+
+  .details-form,
+  .details-review {
+    grid-template-columns: 1fr;
+  }
+
+  .details-form {
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .field-group small {
+    display: none;
+  }
+
+  .details-review {
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .details-review div {
+    padding: 0.7rem;
   }
 
   .outcome-actions {
