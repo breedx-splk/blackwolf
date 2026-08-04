@@ -19,16 +19,23 @@ const wizardMark = `
   </svg>
 `;
 
+const appDynamicsMark = `
+  <div class="appd-mark" aria-label="AppDynamics">
+    <img src="./appdynamics-logo.png" alt="AppDynamics" />
+  </div>
+`;
+
 function shell(content, step = '') {
   return `
     <main class="app-shell">
       <div class="aurora aurora-one" aria-hidden="true"></div>
       <div class="aurora aurora-two" aria-hidden="true"></div>
+      <div class="unauthorized-watermark" aria-hidden="true">Unauthorized</div>
       <header class="brand" aria-label="Blackwolf">
         ${wizardMark}
         <div class="brand-copy">
           <span class="brand-name">blackwolf</span>
-          <span class="tagline">AppD agent migration helper</span>
+          <span class="tagline">AppD agent migration helper wizard</span>
         </div>
       </header>
       ${step}
@@ -47,8 +54,8 @@ function splash() {
       <span class="eyebrow">Migration, minus the guesswork</span>
       <h1 id="welcome-title">Make the move to<br /><em>OpenTelemetry.</em></h1>
       <p>
-        Blackwolf guides you through migrating supported AppDynamics agent
-        configuration to Splunk OpenTelemetry agents—one clear question at a time.
+        Blackwolf guides you through migrating AppDynamics agents
+        to Splunk OpenTelemetry agents -— one clear question at a time.
       </p>
       <div class="journey" aria-label="Migration journey">
         <span>AppDynamics</span>
@@ -60,28 +67,109 @@ function splash() {
     </section>
     <div class="actions">
       <button class="primary-button" id="begin-button" type="button">
-        Begin migration
+        Journey forth
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
       </button>
     </div>
   `);
 
-  document.querySelector('#begin-button').addEventListener('click', showReadyScreen);
+  document.querySelector('#begin-button').addEventListener('click', showAgentQuestion);
 }
 
-function showReadyScreen() {
+function focusCard() {
+  document.querySelector('.question-card').focus({ preventScroll: true });
+}
+
+function showAgentQuestion() {
   app.innerHTML = shell(
     `
-      <section class="question-card ready-card" aria-labelledby="ready-title">
-        <span class="eyebrow">Before we begin</span>
-        <h1 id="ready-title">Let’s get oriented.</h1>
+      <section class="question-card agent-question-card" aria-labelledby="agent-question-title" tabindex="-1">
+        <span class="eyebrow">Your current setup</span>
+        <div class="vendor-heading">
+          ${appDynamicsMark}
+        </div>
+        <h1 id="agent-question-title">Is your application currently instrumented by an AppDynamics agent?</h1>
         <p>
-          Next, Blackwolf will ask about your current AppDynamics agents and the
-          configuration you want to carry forward. You won’t need to change anything yet.
+          Choose the answer that best describes the application you’re preparing to migrate.
+        </p>
+      </section>
+      <div class="actions answer-actions" aria-label="Choose an answer">
+        <button class="primary-button answer-button" id="yes-button" type="button">
+          Yes
+        </button>
+        <button class="primary-button answer-button" id="no-button" type="button">
+          No
+        </button>
+      </div>
+      <button class="text-button" id="back-button" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+        Back to introduction
+      </button>
+    `,
+    '<div class="step-label" aria-label="Current step">Current setup <span>01</span></div>',
+  );
+
+  document.querySelector('#back-button').addEventListener('click', splash);
+  document.querySelector('#no-button').addEventListener('click', showOpenTelemetryPath);
+  document.querySelector('#yes-button').addEventListener('click', showAgentPath);
+  focusCard();
+}
+
+function showOpenTelemetryPath() {
+  app.innerHTML = shell(
+    `
+      <section class="question-card outcome-card" aria-labelledby="open-path-title" tabindex="-1">
+        <div class="success-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <path d="M21 29v-8c0-8 5-14 13-14 6 0 10 3 12 8" />
+            <rect x="12" y="27" width="40" height="31" rx="7" />
+            <path d="m25 42 5 5 10-11" />
+          </svg>
+        </div>
+        <span class="eyebrow">The open path</span>
+        <h1 id="open-path-title">No vendor lock-in.<br /><em>Nicely done.</em></h1>
+        <p>
+          Congratulations—there’s no AppDynamics agent configuration to untangle.
+          You can <a href="https://opentelemetry.io/docs/getting-started/">head straight to OpenTelemetry</a>
+          and start instrumenting your application.
+        </p>
+      </section>
+      <div class="actions actions-split outcome-actions">
+        <button class="secondary-button" id="back-button" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+          Back
+        </button>
+        <a
+          class="primary-button"
+          href="https://opentelemetry.io/docs/getting-started/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Get started
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+        </a>
+      </div>
+    `,
+    '<div class="step-label" aria-label="Current step">Your path <span>✓</span></div>',
+  );
+
+  document.querySelector('#back-button').addEventListener('click', showAgentQuestion);
+  focusCard();
+}
+
+function showAgentPath() {
+  app.innerHTML = shell(
+    `
+      <section class="question-card ready-card" aria-labelledby="agent-path-title" tabindex="-1">
+        <span class="eyebrow">Agent detected</span>
+        <h1 id="agent-path-title">AppDynamics is in the picture.</h1>
+        <p>
+          Next, we’ll identify the agent instrumenting your application so Blackwolf
+          can tailor the migration path to your setup.
         </p>
         <div class="callout">
           <span aria-hidden="true">i</span>
-          <p>The guided migration questions will be added in the next iteration.</p>
+          <p>The agent-identification question will be added next.</p>
         </div>
       </section>
       <div class="actions actions-split">
@@ -89,14 +177,14 @@ function showReadyScreen() {
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
           Back
         </button>
-        <button class="primary-button" type="button" disabled>Start assessment</button>
+        <button class="primary-button" type="button" disabled>Adventure onward</button>
       </div>
     `,
-    '<div class="step-label" aria-label="Current step">Introduction <span>01</span></div>',
+    '<div class="step-label" aria-label="Current step">Identify your agent <span>02</span></div>',
   );
 
-  document.querySelector('#back-button').addEventListener('click', splash);
-  document.querySelector('.question-card').focus({ preventScroll: true });
+  document.querySelector('#back-button').addEventListener('click', showAgentQuestion);
+  focusCard();
 }
 
 splash();

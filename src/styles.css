@@ -22,6 +22,10 @@ button {
   font: inherit;
 }
 
+a {
+  color: inherit;
+}
+
 .app-shell {
   position: relative;
   isolation: isolate;
@@ -30,7 +34,7 @@ button {
   flex-direction: column;
   align-items: center;
   overflow: hidden;
-  padding: clamp(2rem, 6vh, 4.5rem) 1.5rem 1.5rem;
+  padding: clamp(1rem, 3vh, 2rem) 1.5rem 1.5rem;
   background:
     radial-gradient(circle at 50% 5%, rgb(220 228 255 / 42%), transparent 38%),
     linear-gradient(145deg, #8ea5d5 0%, #708bc8 42%, #536da9 100%);
@@ -72,11 +76,35 @@ button {
   box-shadow: 0 0 0 6rem rgb(42 58 105 / 4%);
 }
 
+.unauthorized-watermark {
+  position: absolute;
+  z-index: 3;
+  top: 2.8rem;
+  right: -6rem;
+  width: 20rem;
+  border: 3px double rgb(126 22 40 / 64%);
+  padding: 0.55rem 1rem;
+  color: rgb(126 22 40 / 72%);
+  background: rgb(255 246 239 / 13%);
+  box-shadow: inset 0 0 0 2px rgb(126 22 40 / 8%);
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(45deg);
+  transform-origin: center;
+  user-select: none;
+  pointer-events: none;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+  margin-bottom: clamp(0.85rem, 2.2vh, 1.5rem);
   color: #f8f5ea;
   filter: drop-shadow(0 5px 1px rgb(37 50 89 / 27%));
   animation: settle 600ms ease-out both;
@@ -252,6 +280,33 @@ h1 em {
   stroke-width: 1.5;
 }
 
+.vendor-heading {
+  position: absolute;
+  top: clamp(1.25rem, 4vw, 2.5rem);
+  right: clamp(1.25rem, 4vw, 2.5rem);
+  margin: 0;
+}
+
+.appd-mark {
+  display: inline-flex;
+  align-items: center;
+}
+
+.appd-mark img {
+  display: block;
+  width: 8rem;
+  height: auto;
+}
+
+.agent-question-card h1 {
+  max-width: 18ch;
+  font-size: clamp(2rem, 5.3vw, 3.25rem);
+}
+
+.agent-question-card {
+  position: relative;
+}
+
 .actions {
   display: flex;
   justify-content: center;
@@ -262,6 +317,15 @@ h1 em {
 
 .actions-split {
   justify-content: space-between;
+}
+
+.answer-actions {
+  gap: clamp(1rem, 4vw, 2rem);
+}
+
+.answer-button {
+  min-width: min(13rem, 42vw);
+  font-size: 1rem;
 }
 
 .primary-button,
@@ -279,6 +343,7 @@ h1 em {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  text-decoration: none;
   transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
 }
 
@@ -341,6 +406,39 @@ h1 em {
   transform: translateY(-1px);
 }
 
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  border: 0;
+  padding: 0.4rem;
+  color: rgb(255 255 255 / 72%);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.text-button:hover {
+  color: white;
+}
+
+.text-button:focus-visible {
+  border-radius: 0.25rem;
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.text-button svg {
+  width: 1rem;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 .step-label {
   display: flex;
   width: min(100%, 720px);
@@ -365,6 +463,30 @@ h1 em {
 
 .ready-card h1 {
   max-width: none;
+}
+
+.success-mark {
+  display: grid;
+  width: 4.25rem;
+  height: 4.25rem;
+  place-items: center;
+  margin-bottom: 1.5rem;
+  border-radius: 50%;
+  color: #3f7765;
+  background: #dceee5;
+}
+
+.success-mark svg {
+  width: 2.65rem;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.outcome-card h1 {
+  max-width: 15ch;
 }
 
 .callout {
@@ -440,7 +562,7 @@ footer {
 
 @media (max-width: 560px) {
   .app-shell {
-    padding: 2rem 1rem 1.25rem;
+    padding: 1rem 1rem 1.25rem;
   }
 
   .brand {
@@ -452,9 +574,26 @@ footer {
     letter-spacing: 0.13em;
   }
 
+  .unauthorized-watermark {
+    top: 1.65rem;
+    right: -4.5rem;
+    width: 15rem;
+    padding-block: 0.4rem;
+    font-size: 0.72rem;
+  }
+
   .question-card {
     border-radius: 1rem;
     padding: 1.75rem 1.35rem;
+  }
+
+  .vendor-heading {
+    top: 1.15rem;
+    right: 1.15rem;
+  }
+
+  .appd-mark img {
+    width: 5.5rem;
   }
 
   .journey {
@@ -474,6 +613,73 @@ footer {
     flex: 1;
     padding-inline: 0.7rem;
     font-size: 0.75rem;
+  }
+
+  .answer-actions {
+    gap: 0.75rem;
+  }
+
+  .answer-button {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .outcome-actions {
+    align-items: stretch;
+  }
+
+  .outcome-actions > * {
+    min-width: 0;
+    flex: 1;
+    padding-inline: 0.65rem;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-height: 800px) and (min-width: 561px) {
+  .app-shell {
+    padding-top: 0.85rem;
+  }
+
+  .brand {
+    margin-bottom: 0.65rem;
+  }
+
+  .brand-mark {
+    width: 4rem;
+  }
+
+  .brand-name {
+    font-size: 3.25rem;
+  }
+
+  .question-card {
+    padding-block: 2rem;
+  }
+
+  .question-card > p {
+    margin-top: 1rem;
+  }
+
+  .vendor-heading {
+    top: 1.25rem;
+    right: 2rem;
+  }
+
+  .appd-mark img {
+    width: 6.5rem;
+  }
+
+  .actions {
+    margin-top: 1.25rem;
+  }
+
+  .text-button {
+    margin-top: 0.85rem;
+  }
+
+  footer {
+    padding-top: 1.25rem;
   }
 }
 
